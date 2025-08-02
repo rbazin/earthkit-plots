@@ -17,7 +17,6 @@ import warnings
 import earthkit.data
 from earthkit.data import FieldList
 from earthkit.data.core import Base
-
 from earthkit.plots.components import layouts
 from earthkit.plots.components.figures import Figure
 from earthkit.plots.schemas import schema
@@ -35,6 +34,7 @@ def quickplot(
     groupby=None,
     units=None,
     subplot_titles=None,
+    generate_alt_description=False,
     **kwargs,
 ):
     """
@@ -59,6 +59,10 @@ def quickplot(
         Dimension along which to group the data.
     units : string or list, optional
         Units to convert the data to.
+    generate_alt_description : bool, optional
+        If True, generate alternative text descriptions for the plot using EarthReach.
+        Requires mode='overlay' and data containing '2t' and 'msl' variables.
+        Default is False.
     **kwargs : dict
         Additional arguments for the plot method(s).
 
@@ -152,6 +156,42 @@ def quickplot(
                 f"Failed to execute {m} on given data with: \n"
                 f"{err}\n\n"
                 "consider constructing the plot manually."
+            )
+
+    if generate_alt_description:
+        try:
+            from earth_reach import EarthReachAgent
+
+            if mode != "overlay":
+                warnings.warn(
+                    "generate_alt_description requires mode='overlay'. Continuing without generating alternative descriptions."
+                )
+                return figure
+
+            if not isinstance(args, FieldList):
+                warnings.warn(
+                    "generate_alt_description requires FieldList data. Continuing without generating alternative descriptions."
+                )
+                return figure
+
+            short_names = [arg.metadata("short_name") for arg in args]  # type: ignore
+            if not ("2t" in short_names and "msl" in short_names):
+                warnings.warn(
+                    "generate_alt_description requires data with both '2t' and 'msl' variables. Continuing without generating alternative descriptions."
+                )
+                return figure
+
+            earth_reach_agent = EarthReachAgent()
+            figure = earth_reach_agent.generate_alt_description(
+                figure, args, return_updated_figure=True
+            )
+        except ImportError:
+            warnings.warn(
+                "To use `generate_alt_description=True`, please install the `earth-reach-agent` package. Continuing without generating alternative descriptions."
+            )
+        except Exception as e:
+            warnings.warn(
+                f"An error occurred while generating alternative descriptions: {e}. Continuing without generating alternative descriptions."
             )
 
     return figure

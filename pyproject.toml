@@ -50,6 +50,9 @@ optional-dependencies.test = [
   "pytest-forked",
   "pytest-timeout"
 ]
+optional-dependencies.alt-descriptions = [
+  "earth-reach"
+]
 urls.Documentation = "https://earthkit-plots.readthedocs.io/"
 urls.Homepage = "https://github.com/ecmwf/earthkit-plots/"
 urls.Issues = "https://github.com/ecmwf/earthkit-plots.issues"
