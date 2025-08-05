@@ -60,7 +60,8 @@ def quickplot(
     units : string or list, optional
         Units to convert the data to.
     generate_alt_description : bool, optional
-        If True, generate alternative text descriptions for the plot using EarthReach.
+        If True, generate alternative text descriptions for the plot using EarthReach and
+        return it alongside the figure.
         Requires mode='overlay' and data containing '2t' and 'msl' variables.
         Default is False.
     **kwargs : dict
@@ -182,9 +183,8 @@ def quickplot(
                 return figure
 
             earth_reach_agent = EarthReachAgent()
-            figure = earth_reach_agent.generate_alt_description(
-                figure, args, return_updated_figure=True
-            )
+            description = earth_reach_agent.generate_alt_description(figure, args)
+            return figure, description
         except ImportError:
             warnings.warn(
                 "To use `generate_alt_description=True`, please install the `earth-reach-agent` package. Continuing without generating alternative descriptions."
