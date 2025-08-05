@@ -187,7 +187,7 @@ def quickplot(
             return figure, description
         except ImportError:
             warnings.warn(
-                "To use `generate_alt_description=True`, please install the `earth-reach-agent` package. Continuing without generating alternative descriptions."
+                "To use `generate_alt_description=True`, please install the `earth-reach` package. Continuing without generating alternative descriptions."
             )
         except Exception as e:
             warnings.warn(
